@@ -40,6 +40,11 @@ class Room extends Model
         return $this->hasMany(Rental::class);
     }
 
+    public function photos(): HasMany
+    {
+        return $this->hasMany(RoomPhoto::class)->orderBy('display_order');
+    }
+
     /**
      * Harga untuk paket tertentu. Dipakai nanti (Hari 8) saat menghitung
      * total_price otomatis pada pembuatan rental.
