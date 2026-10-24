@@ -10,10 +10,14 @@
         <div class="mt-6"><x-auth-tabs active="register" /></div>
         <h2 class="mt-5 text-center text-base font-semibold">Daftar akun</h2>
 
+        @if ($errors->any())
+            <div class="mt-4 rounded-lg bg-tint-danger p-3 text-xs text-danger">{{ $errors->first() }}</div>
+        @endif
+
         <form method="POST" action="{{ route('register') }}" class="mt-4 space-y-3">
             @csrf
             <x-field name="name" icon="user" placeholder="Nama lengkap" autocomplete="name" required />
-            <x-field name="phone" type="tel" icon="phone" placeholder="Nomor HP" autocomplete="tel" required />
+            <x-field name="email" type="email" icon="envelope" placeholder="Email" autocomplete="email" required />
             <x-field name="password" type="password" icon="lock-closed" placeholder="Password" autocomplete="new-password" required />
             <x-field name="password_confirmation" type="password" icon="lock-closed" placeholder="Ulangi password" autocomplete="new-password" required />
             <x-button type="submit">Daftar</x-button>

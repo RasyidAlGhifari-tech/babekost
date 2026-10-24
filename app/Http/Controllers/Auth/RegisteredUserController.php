@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -20,28 +21,25 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->merge(['phone' => User::normalizePhone($request->phone)]);
-
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'phone'    => ['required', 'regex:/^08\d{8,12}$/',
-                           Rule::unique('users', 'phone')->whereNull('deleted_at')],
+            'email'    => ['required', 'string', 'email', 'max:255',
+                            Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
-            'phone.regex'  => 'Format nomor HP tidak valid (contoh 081234567890).',
-            'phone.unique' => 'Nomor HP sudah terdaftar.',
+            'email.unique' => 'Email sudah terdaftar.',
         ]);
 
         $user = User::create([
             'name'     => $request->name,
-            'phone'    => $request->phone,
-            'password' => $request->password,
+            'email'    => Str::lower($request->email),
+            'password' => $request->password, // di-hash oleh cast 'hashed'
         ]);
 
-        $user->tenant()->create(['phone' => $user->phone]);
+        $user->tenant()->create([]);
 
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('tenant.home');
     }
 }

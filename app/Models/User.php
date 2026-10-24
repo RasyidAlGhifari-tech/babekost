@@ -16,7 +16,7 @@ class User extends Authenticatable
     // `role` dan `is_active` sengaja tidak di-fillable: registrasi publik
     // tidak boleh menentukan role atau status akun sendiri.
     // Default di database: role = 'penyewa', is_active = true.
-    protected $fillable = ['name', 'phone', 'username', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'phone', 'password'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -28,11 +28,12 @@ class User extends Authenticatable
         ];
     }
 
-    // Setiap nomor HP otomatis disimpan dalam format 08xxxxxxxxxx.
+    // Nomor HP bersifat opsional (bukan untuk login).
+    // Jika diisi, disimpan dalam format 08xxxxxxxxxx.
     protected function phone(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => self::normalizePhone($value),
+            set: fn ($value) => filled($value) ? self::normalizePhone($value) : null,
         );
     }
 

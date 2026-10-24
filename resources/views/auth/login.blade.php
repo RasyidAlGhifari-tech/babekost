@@ -10,9 +10,13 @@
         <div class="mt-6"><x-auth-tabs active="login" /></div>
         <h2 class="mt-5 text-center text-base font-semibold">Masuk ke akun</h2>
 
+        @if ($errors->any())
+            <div class="mt-4 rounded-lg bg-tint-danger p-3 text-xs text-danger">{{ $errors->first() }}</div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}" class="mt-4 space-y-3">
             @csrf
-            <x-field name="login" icon="phone" placeholder="Nomor HP atau username" autocomplete="username" required autofocus />
+            <x-field name="email" type="email" icon="envelope" placeholder="Email" autocomplete="email" required autofocus />
             <x-field name="password" type="password" icon="lock-closed" placeholder="Password" autocomplete="current-password" required />
             <x-button type="submit">Login</x-button>
         </form>

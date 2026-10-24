@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->string('emergency_contact')->nullable();
             $table->string('campus_or_job')->nullable();
             $table->timestamps();

@@ -1,5 +1,15 @@
 @php
     $packageLabel = ['monthly' => 'Bulanan', 'quarterly' => 'Kuartalan', 'yearly' => 'Tahunan'];
+    $paymentMap = [
+        'menunggu_verifikasi' => ['menunggu', 'Menunggu'],
+        'terverifikasi'       => ['terverifikasi', 'Terverifikasi'],
+        'ditolak'             => ['ditolak', 'Ditolak'],
+    ];
+    $complaintMap = [
+        'baru'     => ['baru', 'Baru'],
+        'diproses' => ['menunggu', 'Diproses'],
+        'selesai'  => ['aktif', 'Selesai'],
+    ];
 @endphp
 <x-layouts.tenant title="Home" :greeting="'Halo, ' . auth()->user()->name">
     <div class="flex flex-col gap-4 p-4">
@@ -18,8 +28,8 @@
                     </div>
                 </div>
                 <p class="text-[11px] text-slate">
-                    {{ \Carbon\Carbon::parse($booking->start_date)->translatedFormat('j M Y') }} -
-                    {{ \Carbon\Carbon::parse($booking->end_date)->translatedFormat('j M Y') }}
+                    {{ $booking->start_date->translatedFormat('j M Y') }} -
+                    {{ $booking->end_date->translatedFormat('j M Y') }}
                 </p>
                 <div>
                     <div class="flex items-center justify-between text-[11px]">
@@ -35,18 +45,32 @@
             <x-card class="space-y-3 p-4 text-center">
                 <p class="text-sm font-semibold">Belum ada kamar aktif</p>
                 <p class="text-xs text-slate">Ajukan booking untuk mulai menyewa kamar.</p>
-                <x-button href="{{ route('visitor.rooms') }}">Lihat kamar</x-button>
+                <x-button href="{{ route('tenant.booking') }}">Ajukan booking</x-button>
+            </x-card>
+        @endif
+
+        {{-- Pembayaran terakhir --}}
+        @if ($lastPayment)
+            @php [$pSt, $pLabel] = $paymentMap[$lastPayment->status] ?? ['default', $lastPayment->status]; @endphp
+            <x-card class="flex items-center justify-between p-3">
+                <div>
+                    <p class="text-xs font-semibold">Pembayaran terakhir</p>
+                    <p class="text-[11px] text-slate">
+                        Rp {{ number_format($lastPayment->amount, 0, ',', '.') }} • {{ $lastPayment->paid_at->translatedFormat('j M Y') }}
+                    </p>
+                </div>
+                <x-badge :status="$pSt">{{ $pLabel }}</x-badge>
             </x-card>
         @endif
 
         {{-- Aksi cepat --}}
         <div class="grid grid-cols-3 gap-3">
             @foreach ([
-                ['Upload proof', 'arrow-up-tray',            'bg-tint-gold text-gold-700',       'tenant.payment'],
-                ['Report issue', 'exclamation-circle',       'bg-tint-danger text-danger',       'tenant.complaints'],
-                ['Extend',       'arrow-path',               'bg-tint-success text-success',     'tenant.booking'],
+                ['Upload proof', 'arrow-up-tray',      'bg-tint-gold text-gold-700',   'tenant.payment'],
+                ['Report issue', 'exclamation-circle', 'bg-tint-danger text-danger',   'tenant.complaints'],
+                ['Extend',       'arrow-path',         'bg-tint-success text-success', 'tenant.booking'],
             ] as [$label, $icon, $tone, $route])
-                <a href="{{ Route::has($route) ? route($route) : '#' }}" class="block">
+                <a href="{{ route($route) }}" class="block">
                     <x-card class="flex flex-col items-center gap-2 p-3">
                         <span class="flex h-10 w-10 items-center justify-center rounded-lg {{ $tone }}">
                             <x-dynamic-component :component="'heroicon-o-' . $icon" class="h-5 w-5" />
@@ -56,6 +80,21 @@
                 </a>
             @endforeach
         </div>
+
+        {{-- Keluhan terakhir --}}
+        @if ($lastComplaint)
+            @php [$cSt, $cLabel] = $complaintMap[$lastComplaint->status] ?? ['default', $lastComplaint->status]; @endphp
+            <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold">Keluhan terakhir</h3>
+                    <a href="{{ route('tenant.complaints', ['tab' => 'riwayat']) }}" class="text-xs font-medium text-gold-700">Lihat semua</a>
+                </div>
+                <x-card class="flex items-center justify-between gap-3 p-3">
+                    <p class="truncate text-xs font-semibold">{{ \Illuminate\Support\Str::limit($lastComplaint->description, 40) }}</p>
+                    <x-badge :status="$cSt">{{ $cLabel }}</x-badge>
+                </x-card>
+            </section>
+        @endif
 
         {{-- Info kos --}}
         <section class="space-y-2">
