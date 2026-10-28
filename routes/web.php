@@ -51,7 +51,15 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('pemilik')->name('admin.')
     ->group(function () {
         Route::get('/', Admin\DashboardController::class)->name('dashboard');
+
+        // Rooms (rute statis /create dulu, baru yang berparameter)
         Route::get('/rooms', [Admin\RoomController::class, 'index'])->name('rooms');
+        Route::get('/rooms/create', [Admin\RoomController::class, 'create'])->name('rooms.create');
+        Route::post('/rooms', [Admin\RoomController::class, 'store'])->name('rooms.store');
+        Route::get('/rooms/{room}/edit', [Admin\RoomController::class, 'edit'])->name('rooms.edit');
+        Route::put('/rooms/{room}', [Admin\RoomController::class, 'update'])->name('rooms.update');
+        Route::patch('/rooms/{room}/status', [Admin\RoomController::class, 'status'])->name('rooms.status');
+        Route::delete('/rooms/{room}', [Admin\RoomController::class, 'destroy'])->name('rooms.destroy');
 
         // Finance (rute statis dulu, baru yang berparameter)
         Route::get('/finance', [Admin\FinanceController::class, 'index'])->name('finance');
@@ -101,8 +109,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/accounts/{user}/toggle', [Admin\TenantAccountController::class, 'toggle'])->name('accounts.toggle');
     });
 
+// /dashboard bawaan Breeze: arahkan sesuai role
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return auth()->user()->isAdmin()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('tenant.home');
 })->middleware(['auth'])->name('dashboard');
 
 // ---------- Profil bawaan Breeze ----------
