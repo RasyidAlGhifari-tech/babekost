@@ -105,7 +105,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/agendas/{agenda}/done', [Admin\PromoController::class, 'doneAgenda'])->name('agendas.done');
         Route::delete('/agendas/{agenda}', [Admin\PromoController::class, 'destroyAgenda'])->name('agendas.destroy');
 
+        // Accounts + tambah penyewa manual
         Route::get('/accounts', [Admin\TenantAccountController::class, 'index'])->name('accounts');
+        Route::get('/accounts/create', [Admin\TenantRegistrationController::class, 'create'])->name('accounts.create');
+        Route::post('/accounts', [Admin\TenantRegistrationController::class, 'store'])->name('accounts.store');
         Route::post('/accounts/{user}/reset', [Admin\TenantAccountController::class, 'reset'])->name('accounts.reset');
         Route::post('/accounts/{user}/toggle', [Admin\TenantAccountController::class, 'toggle'])->name('accounts.toggle');
     });

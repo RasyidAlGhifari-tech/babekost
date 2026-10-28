@@ -13,6 +13,11 @@
             </div>
         @endif
 
+        <a href="{{ route('admin.accounts.create') }}"
+            class="flex items-center justify-center gap-1 rounded-xl bg-gold-700 py-3 text-sm font-semibold text-white">
+            <x-heroicon-o-plus class="h-5 w-5" /> Tambah Penyewa
+        </a>
+
         <form method="GET" action="{{ route('admin.accounts') }}">
             <div class="flex items-center gap-2 rounded-lg border border-line-chip bg-white px-3 focus-within:border-gold-700">
                 <x-heroicon-o-magnifying-glass class="h-5 w-5 shrink-0 text-muted" />
