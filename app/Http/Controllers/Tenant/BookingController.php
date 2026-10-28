@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Room;
+use App\Support\Notifier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,15 +38,18 @@ class BookingController extends Controller
         $tenant = auth()->user()->tenant;
 
         $data = $request->validate([
-            'room_id'    => ['required', 'exists:rooms,id'],
-            'package'    => ['required', 'in:monthly,yearly'],
-            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'room_id'     => ['required', 'exists:rooms,id'],
+            'package'     => ['required', 'in:monthly,yearly'],
+            'start_date'  => ['required', 'date', 'after_or_equal:today'],
+            'agree_rules' => ['accepted'],
+        ], [
+            'agree_rules.accepted' => 'Anda harus menyetujui tata tertib kost.',
         ]);
 
         $start = Carbon::parse($data['start_date'])->startOfDay();
         $end   = ($data['package'] === 'yearly' ? $start->copy()->addYear() : $start->copy()->addMonth())->subDay();
 
-        DB::transaction(function () use ($data, $tenant, $start, $end) {
+        $booking = DB::transaction(function () use ($data, $tenant, $start, $end) {
             $room = Room::whereKey($data['room_id'])->lockForUpdate()->firstOrFail();
 
             $free = Room::availableBetween($start, $end)->whereKey($room->id)->exists();
@@ -55,17 +59,28 @@ class BookingController extends Controller
                 ]);
             }
 
-            Booking::create([
-                'tenant_id'      => $tenant->id,
-                'room_id'        => $room->id,
-                'package'        => $data['package'],
-                'start_date'     => $start,
-                'end_date'       => $end,
-                'total_price'    => $data['package'] === 'yearly' ? $room->price_yearly : $room->price_monthly,
-                'deposit_amount' => 0, // ASUMSI: belum ada aturan DP. Ubah bila ada.
-                'status'         => 'menunggu_pembayaran',
-            ]);
+            $booking = new Booking();
+            $booking->forceFill([
+                'tenant_id'             => $tenant->id,
+                'room_id'               => $room->id,
+                'package'               => $data['package'],
+                'start_date'            => $start,
+                'end_date'              => $end,
+                'total_price'           => $data['package'] === 'yearly' ? $room->price_yearly : $room->price_monthly,
+                'deposit_amount'        => 0, // ASUMSI: belum ada aturan DP. Ubah bila ada.
+                'status'                => 'menunggu_pembayaran',
+                'house_rules_agreed_at' => now(),
+            ])->save();
+
+            return $booking->load('room');
         });
+
+        Notifier::toAdmins(
+            'Booking baru',
+            "Booking baru untuk Kamar {$booking->room->number}.",
+            route('admin.bookings', [], false),
+            'calendar-days'
+        );
 
         return redirect()->route('tenant.booking', ['tab' => 'saya'])
             ->with('status', 'Booking diajukan. Silakan unggah bukti pembayaran.');

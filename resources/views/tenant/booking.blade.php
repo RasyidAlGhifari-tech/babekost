@@ -81,6 +81,8 @@
                     <span class="text-xl font-bold text-gold-300" x-text="rp(total)"></span>
                 </div>
 
+                <x-house-rules />
+
                 <x-button type="submit">Ajukan booking</x-button>
             </form>
         @else
