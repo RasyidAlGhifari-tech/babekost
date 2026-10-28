@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Tenant\BookingController;
 use App\Http\Controllers\Tenant\ComplaintController;
@@ -116,8 +117,12 @@ Route::get('/dashboard', function () {
         : redirect()->route('tenant.home');
 })->middleware(['auth'])->name('dashboard');
 
-// ---------- Profil bawaan Breeze ----------
+// ---------- Notifikasi (admin & penyewa) dan profil bawaan Breeze ----------
 Route::middleware('auth')->group(function () {
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/notifikasi/{id}', [NotificationController::class, 'open'])->name('notifications.open');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

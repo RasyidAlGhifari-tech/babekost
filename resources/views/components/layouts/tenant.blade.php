@@ -5,10 +5,7 @@
             @isset($action)
                 {{ $action }}
             @else
-                <a href="#" class="relative flex h-10 w-10 items-center justify-center rounded-full bg-tint-gold text-gold-700" aria-label="Notifikasi">
-                    <x-heroicon-o-bell class="h-5 w-5" />
-                    <span class="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-danger"></span>
-                </a>
+                <x-notification-bell />
             @endisset
         </x-slot:action>
     </x-app-bar>

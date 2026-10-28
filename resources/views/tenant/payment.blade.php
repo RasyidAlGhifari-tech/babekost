@@ -8,12 +8,6 @@
     $selected = (int) old('booking_id', request('booking', $bookings->first()?->id));
 @endphp
 <x-layouts.tenant title="Payment">
-    <x-slot:action>
-        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-tint-gold text-gold-700">
-            <x-heroicon-o-receipt-percent class="h-5 w-5" />
-        </span>
-    </x-slot:action>
-
     <div class="flex flex-col gap-4 p-4">
         <x-tabs :tabs="['unggah' => 'Unggah', 'riwayat' => 'Riwayat']" :active="$tab" />
 
