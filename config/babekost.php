@@ -28,4 +28,14 @@ return [
     'payment_deadline_hours' => 48, // batas bayar sebelum booking dibatalkan otomatis
     'renewal_reminder_days'  => 7,  // pengingat sebelum masa sewa berakhir
 
+    // DP = persen dari harga bulanan kamar, berlaku untuk semua paket.
+    'dp_percent' => 50,
+
+    // Rekening tujuan pembayaran. Isi 'holder' (atas nama) bila ingin ditampilkan.
+    'bank' => [
+        'name'   => 'BCA',
+        'number' => '3150919923',
+        'holder' => null,
+    ],
+
 ];

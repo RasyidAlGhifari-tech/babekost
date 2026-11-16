@@ -6,6 +6,11 @@
         'ditolak'             => ['ditolak', 'Ditolak'],
     ];
     $selected = (int) old('booking_id', request('booking', $bookings->first()?->id));
+    if (! $bookings->pluck('id')->contains($selected)) {
+        $selected = (int) $bookings->first()?->id;
+    }
+    $bank = config('babekost.bank');
+    $pkgLabel = \App\Support\Packages::LABELS;
 @endphp
 <x-layouts.tenant title="Payment">
     <div class="flex flex-col gap-4 p-4">
@@ -23,22 +28,30 @@
                 <p class="py-10 text-center text-sm text-slate">Belum ada booking yang perlu dibayar.</p>
             @else
                 <form method="POST" action="{{ route('tenant.payment.store') }}" enctype="multipart/form-data"
-                      class="flex flex-col gap-4" x-data="{ file: null }">
+                      class="flex flex-col gap-4"
+                      x-data="{
+                          file: null,
+                          info: @js($info),
+                          bid: {{ $selected }},
+                          amount: @js(old('amount', $info[$selected]['min'] ?? ''))
+                      }"
+                      x-init="$watch('bid', v => amount = info[v].min)">
                     @csrf
                     <div>
                         <p class="mb-1 text-[11px] text-slate">Pilih booking</p>
-                        <select name="booking_id" class="w-full rounded-lg border border-line-chip bg-white px-3 py-3 text-xs focus:border-gold-700 focus:ring-0">
+                        <select name="booking_id" x-model="bid" class="w-full rounded-lg border border-line-chip bg-white px-3 py-3 text-xs focus:border-gold-700 focus:ring-0">
                             @foreach ($bookings as $b)
-                                <option value="{{ $b->id }}" @selected($b->id === $selected)>
-                                    Kamar {{ $b->room->number }} • {{ ['monthly' => 'Bulanan', 'quarterly' => 'Kuartalan', 'yearly' => 'Tahunan'][$b->package] }}
+                                <option value="{{ $b->id }}">
+                                    Kamar {{ $b->room->number }} • {{ $pkgLabel[$b->package] ?? $b->package }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div>
                         <p class="mb-1 text-[11px] text-slate">Jumlah pembayaran (Rp)</p>
-                        <input type="number" name="amount" min="1" value="{{ old('amount', $bookings->firstWhere('id', $selected)?->total_price) }}"
+                        <input type="number" name="amount" x-model="amount" :min="info[bid].min" :max="info[bid].max"
                             class="w-full rounded-lg border border-line-chip bg-white px-3 py-3 text-xs focus:border-gold-700 focus:ring-0">
+                        <p class="mt-1 text-[10px] text-slate" x-text="info[bid].hint"></p>
                     </div>
                     <div>
                         <p class="mb-1 text-[11px] text-slate">Bukti transfer</p>
@@ -59,14 +72,21 @@
                 </form>
             @endif
 
-            <div class="flex items-center justify-between rounded-xl bg-ink px-4 py-4 text-white">
+            <div class="flex items-center justify-between rounded-xl bg-ink px-4 py-4 text-white" x-data="{ copied: false }">
                 <div>
                     <p class="text-[11px] text-on-ink-soft">Transfer ke</p>
-                    <p class="text-sm font-bold">BCA - 1234 5678 90</p>
+                    <p class="text-sm font-bold">{{ $bank['name'] }} - {{ $bank['number'] }}</p>
+                    @if (! empty($bank['holder']))
+                        <p class="text-[11px] text-on-ink-soft">a.n. {{ $bank['holder'] }}</p>
+                    @endif
                 </div>
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-gold-300">
-                    <x-heroicon-o-clipboard-document class="h-5 w-5" />
-                </span>
+                <button type="button"
+                        @click="navigator.clipboard.writeText('{{ $bank['number'] }}'); copied = true; setTimeout(() => copied = false, 1500)"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-gold-300"
+                        aria-label="Salin nomor rekening">
+                    <x-heroicon-o-clipboard-document x-show="!copied" class="h-5 w-5" />
+                    <x-heroicon-o-check x-show="copied" x-cloak class="h-5 w-5" />
+                </button>
             </div>
         @else
             @forelse ($payments as $p)

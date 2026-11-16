@@ -29,6 +29,12 @@ class Room extends Model
         ];
     }
 
+    /** Nominal DP: persentase (config babekost.dp_percent) dari harga bulanan. */
+    public function getDpAmountAttribute(): int
+    {
+        return (int) round($this->price_monthly * config('babekost.dp_percent', 50) / 100);
+    }
+
     public function building(): BelongsTo
     {
         return $this->belongsTo(Building::class);
