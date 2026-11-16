@@ -109,6 +109,12 @@
                             <x-heroicon-o-arrow-up-tray class="h-3.5 w-3.5" /> Unggah ulang
                         </a>
                     @endif
+                    @if ($p->status === 'terverifikasi' && $p->receipt_number)
+                        <a href="{{ route('receipt', $p) }}" target="_blank"
+                            class="flex items-center gap-1 text-[11px] font-semibold text-gold-700">
+                            <x-heroicon-o-arrow-down-tray class="h-3.5 w-3.5" /> Kwitansi {{ $p->receipt_number }}
+                        </a>
+                    @endif
                 </x-card>
             @empty
                 <p class="py-10 text-center text-sm text-slate">Belum ada pembayaran.</p>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\Tenant\BookingController;
 use App\Http\Controllers\Tenant\ComplaintController;
 use App\Http\Controllers\Tenant\HomeController as TenantHomeController;
@@ -120,11 +121,13 @@ Route::get('/dashboard', function () {
         : redirect()->route('tenant.home');
 })->middleware(['auth'])->name('dashboard');
 
-// ---------- Notifikasi (admin & penyewa) dan profil bawaan Breeze ----------
+// ---------- Notifikasi, kwitansi (admin & penyewa) dan profil bawaan Breeze ----------
 Route::middleware('auth')->group(function () {
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifikasi/baca-semua', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::get('/notifikasi/{id}', [NotificationController::class, 'open'])->name('notifications.open');
+
+    Route::get('/kwitansi/{payment}', ReceiptController::class)->name('receipt');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
