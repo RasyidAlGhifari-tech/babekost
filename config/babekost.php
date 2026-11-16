@@ -24,4 +24,8 @@ return [
         'Dilarang membawa kompor listrik karena sudah disediakan kompor gas. Pelanggaran dikenakan denda Rp500.000.',
     ],
 
+    // Scheduler booking (php artisan bookings:sync)
+    'payment_deadline_hours' => 48, // batas bayar sebelum booking dibatalkan otomatis
+    'renewal_reminder_days'  => 7,  // pengingat sebelum masa sewa berakhir
+
 ];
