@@ -35,7 +35,7 @@
                             <td style="width: 46px;"><img src="{{ $logo }}" style="height: 40px;"></td>
                         @endif
                         <td>
-                            <div class="brand">Babekost</div>
+                            <div class="brand">{{ config('babekost.name') }}</div>
                             <div class="muted">{{ $building->name }}</div>
                             <div class="muted">{{ $building->address }}</div>
                         </td>
@@ -85,7 +85,7 @@
     </table>
 
     <div class="foot">
-        Kwitansi ini diterbitkan otomatis oleh sistem Babekost setelah pembayaran diverifikasi
+        Kwitansi ini diterbitkan otomatis oleh sistem {{ config('babekost.name') }} setelah pembayaran diverifikasi
         ({{ now()->translatedFormat('j F Y H:i') }}).
     </div>
 </div>

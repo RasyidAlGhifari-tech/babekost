@@ -30,7 +30,7 @@
                     @if ($promo->description)
                         <p class="text-[11px] text-slate">{{ $promo->description }}</p>
                     @endif
-                    <x-button href="https://wa.me/6281222223215?text={{ urlencode('Halo, saya tertarik dengan promo ' . $promo->title) }}">
+                    <x-button href="https://wa.me/{{ config('babekost.whatsapp.number') }}?text={{ urlencode('Halo, saya tertarik dengan promo ' . $promo->title) }}">
                         <x-icon-whatsapp class="h-5 w-5" /> Hubungi via WhatsApp
                     </x-button>
                 </x-card>

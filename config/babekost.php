@@ -1,6 +1,26 @@
 <?php
 
+// Nilai yang dipakai lebih dari satu kali, ditulis sekali di sini.
+$waNumber  = '6281222223215';
+$waMessage = 'Halo Babekost, saya ingin bertanya tentang kamar.';
+
 return [
+
+    // Identitas
+    'name' => 'Babekost',
+
+    // WhatsApp admin. Pakai 'url' di view; 'number' untuk pesan yang dibuat sendiri.
+    'whatsapp' => [
+        'number'  => $waNumber,
+        'message' => $waMessage,
+        'url'     => "https://wa.me/{$waNumber}?text=" . rawurlencode($waMessage),
+    ],
+
+    // Titik peta di Home pengunjung
+    'location' => [
+        'lat' => -7.939617820200654,
+        'lng' => 112.60377989495964,
+    ],
 
     'house_rules' => [
         'Tamu yang menginap wajib melapor kepada Ibu Kost paling lambat 1×24 jam.',

@@ -1,4 +1,4 @@
-<x-layouts.visitor title="Babekost" :logo="true">
+<x-layouts.visitor :title="config('babekost.name')" :logo="true">
 
     <div class="space-y-5 p-4">
 
@@ -16,7 +16,7 @@
 
         {{-- Nama dan alamat --}}
         <div>
-            <h2 class="text-base font-bold">{{ $building?->name ?? 'Babekost' }}</h2>
+            <h2 class="text-base font-bold">{{ $building?->name ?? config('babekost.name') }}</h2>
             <p class="mt-0.5 flex items-start gap-1 text-xs text-slate">
                 <x-heroicon-o-map-pin class="mt-0.5 h-4 w-4 shrink-0 text-gold-700" />
                 {{ $building?->address ?? '-' }}
@@ -37,7 +37,7 @@
             </x-card>
         </div>
 
-        <x-button href="https://wa.me/6281222223215">
+        <x-button href="{{ config('babekost.whatsapp.url') }}">
             <x-icon-whatsapp class="h-5 w-5" /> Hubungi via WhatsApp
         </x-button>
 
@@ -74,8 +74,8 @@
 
         {{-- Lokasi --}}
         @php
-            $lat = -7.939617820200654;
-            $lng = 112.60377989495964;
+            $lat = config('babekost.location.lat');
+            $lng = config('babekost.location.lng');
         @endphp
         <section>
             <h3 class="mb-2 text-sm font-semibold">Lokasi</h3>
@@ -85,7 +85,7 @@
                     class="h-40 w-full border-0"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                    title="Lokasi Babekost"></iframe>
+                    title="Lokasi {{ config('babekost.name') }}"></iframe>
             </div>
             <a href="{{ $building?->maps_url ?? 'https://www.google.com/maps/search/?api=1&query=' . $lat . ',' . $lng }}"
                 target="_blank" rel="noopener"

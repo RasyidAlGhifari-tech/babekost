@@ -66,11 +66,11 @@
         {{-- Aksi cepat --}}
         <div class="grid grid-cols-3 gap-3">
             @foreach ([
-                ['Upload proof', 'arrow-up-tray',      'bg-tint-gold text-gold-700',   'tenant.payment'],
-                ['Report issue', 'exclamation-circle', 'bg-tint-danger text-danger',   'tenant.complaints'],
-                ['Extend',       'arrow-path',         'bg-tint-success text-success', 'tenant.booking'],
-            ] as [$label, $icon, $tone, $route])
-                <a href="{{ route($route) }}" class="block">
+                ['Upload proof', 'arrow-up-tray',      'bg-tint-gold text-gold-700',   route('tenant.payment')],
+                ['Report issue', 'exclamation-circle', 'bg-tint-danger text-danger',   route('tenant.complaints')],
+                ['Extend',       'arrow-path',         'bg-tint-success text-success', $booking ? route('tenant.booking', ['extend' => $booking->id]) : route('tenant.booking')],
+            ] as [$label, $icon, $tone, $url])
+                <a href="{{ $url }}" class="block">
                     <x-card class="flex flex-col items-center gap-2 p-3">
                         <span class="flex h-10 w-10 items-center justify-center rounded-lg {{ $tone }}">
                             <x-dynamic-component :component="'heroicon-o-' . $icon" class="h-5 w-5" />
@@ -131,7 +131,7 @@
             @endif
         </section>
 
-        <x-button href="https://wa.me/6281222223215">
+        <x-button href="{{ config('babekost.whatsapp.url') }}">
             <x-icon-whatsapp class="h-5 w-5" /> Hubungi via WhatsApp
         </x-button>
     </div>

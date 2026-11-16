@@ -1,11 +1,11 @@
-@props(['title' => 'Babekost', 'logo' => false])
+@props(['title' => config('babekost.name'), 'logo' => false])
 <x-mobile-shell :title="$title">
     <x-app-bar :title="$title" :logo="$logo">
         <x-slot:action>
             @isset($action)
                 {{ $action }}
             @else
-                <a href="https://wa.me/6281222223215" target="_blank" rel="noopener"
+                <a href="{{ config('babekost.whatsapp.url') }}" target="_blank" rel="noopener"
                     class="flex h-10 w-10 items-center justify-center rounded-full bg-tint-success text-success" aria-label="WhatsApp">
                     <x-icon-whatsapp class="h-5 w-5" />
                 </a>

@@ -57,7 +57,7 @@
                 <x-button href="#">Booking kamar ini</x-button>
             @endguest
 
-            <x-button variant="outline" href="https://wa.me/6281222223215?text={{ urlencode('Halo, saya tertarik dengan Kamar ' . $room->number) }}">
+            <x-button variant="outline" href="https://wa.me/{{ config('babekost.whatsapp.number') }}?text={{ urlencode('Halo, saya tertarik dengan Kamar ' . $room->number) }}">
                 <x-icon-whatsapp class="h-5 w-5" /> Hubungi via WhatsApp
             </x-button>
         </div>

@@ -9,7 +9,7 @@
                 <x-heroicon-o-user class="h-6 w-6" />
             </span>
             <div>
-                <p class="text-sm font-bold">{{ $owner?->name ?? 'Pemilik Babekost' }}</p>
+                <p class="text-sm font-bold">{{ $owner?->name ?? 'Pemilik ' . config('babekost.name') }}</p>
                 <p class="text-[11px] text-slate">Pemilik kos</p>
             </div>
         </x-card>
@@ -25,7 +25,7 @@
             </div>
         </x-card>
 
-        <x-button href="https://wa.me/{{ $wa }}?text={{ urlencode('Halo, saya ' . auth()->user()->name . ' penghuni Babekost.') }}">
+        <x-button href="https://wa.me/{{ config('babekost.whatsapp.number') }}?text={{ urlencode('Halo, saya ' . auth()->user()->name . ' penghuni ' . config('babekost.name') . '.') }}">
             <x-icon-whatsapp class="h-5 w-5" /> Hubungi via WhatsApp
         </x-button>
     </div>
