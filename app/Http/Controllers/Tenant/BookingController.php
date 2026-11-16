@@ -37,9 +37,12 @@ class BookingController extends Controller
                 'dp'        => $r->dp_amount,
             ])->values();
 
+        // Kamar yang dipilih dari halaman detail (?room=ID), bila valid.
+        $preselect = $rooms->contains('id', $request->integer('room')) ? $request->integer('room') : null;
+
         $bookings = $tenant->bookings()->with('room.building')->latest('start_date')->get();
 
-        return view('tenant.booking', compact('rooms', 'bookings', 'extend'));
+        return view('tenant.booking', compact('rooms', 'bookings', 'extend', 'preselect'));
     }
 
     public function store(Request $request)

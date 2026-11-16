@@ -54,7 +54,15 @@
                     <x-heroicon-o-arrow-right-end-on-rectangle class="h-5 w-5" /> Login untuk booking
                 </x-button>
             @else
-                <x-button href="#">Booking kamar ini</x-button>
+                @if (auth()->user()->isTenant())
+                    @if ($room->special_status === 'normal')
+                        <x-button href="{{ route('tenant.booking', ['room' => $room->id]) }}">Booking kamar ini</x-button>
+                    @else
+                        <p class="rounded-lg bg-tint-ink p-3 text-center text-xs text-slate">
+                            Kamar ini sedang tidak bisa dipesan.
+                        </p>
+                    @endif
+                @endif
             @endguest
 
             <x-button variant="outline" href="https://wa.me/{{ config('babekost.whatsapp.number') }}?text={{ urlencode('Halo, saya tertarik dengan Kamar ' . $room->number) }}">

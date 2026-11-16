@@ -33,7 +33,7 @@
             <form method="POST" action="{{ route('tenant.booking.store') }}" class="flex flex-col gap-4"
                 x-data="{
                     rooms: @js($rooms),
-                    roomId: @js((int) old('room_id', $extend?->room_id ?? ($rooms[0]['id'] ?? 0))),
+                    roomId: @js((int) old('room_id', $extend?->room_id ?? $preselect ?? ($rooms[0]['id'] ?? 0))),
                     pkg: @js(old('package', 'monthly')),
                     start: @js(old('start_date', $startDefault)),
                     months: { monthly: 1, quarterly: 3, yearly: 12 },
