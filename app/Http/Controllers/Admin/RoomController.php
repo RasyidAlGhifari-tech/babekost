@@ -25,17 +25,18 @@ class RoomController extends Controller
         $bookIds   = Room::whereHas('bookings', fn ($q) => $q->whereIn('status', ['menunggu_pembayaran', 'booking'])
             ->whereDate('end_date', '>=', $today))->pluck('id')->flip();
 
-        $rooms = Room::with(['building', 'bookings' => fn ($q) => $q->where('status', 'aktif')
-                ->whereDate('end_date', '>=', $today)->orderBy('end_date')])
+        $rooms = Room::with(['building', 'galleries', 'buildingPhotos',
+                'bookings' => fn ($q) => $q->where('status', 'aktif')
+                    ->whereDate('end_date', '>=', $today)->orderBy('end_date')])
             ->when($bid, fn ($q) => $q->where('building_id', $bid))
             ->when($search !== '', fn ($q) => $q->where('number', 'like', "%{$search}%"))
-            ->orderBy('building_id')->orderBy('id')->get()
-            ->filter(fn ($r) => match ($filter) {
-                'kosong'     => isset($kosongIds[$r->id]),
-                'terisi'     => isset($terisiIds[$r->id]),
-                'terbooking' => isset($bookIds[$r->id]),
-                default      => true,
-            });
+            ->when($filter !== 'semua', fn ($q) => $q->whereIn('id', match ($filter) {
+                'kosong'     => $kosongIds->keys(),
+                'terisi'     => $terisiIds->keys(),
+                'terbooking' => $bookIds->keys(),
+            }))
+            ->orderBy('building_id')->orderBy('id')
+            ->paginate(15)->withQueryString();
 
         return view('admin.rooms', [
             'rooms'     => $rooms,

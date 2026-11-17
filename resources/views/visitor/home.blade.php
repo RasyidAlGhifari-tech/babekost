@@ -80,9 +80,8 @@
                 @foreach ($quickRooms as $room)
                     <a href="{{ route('visitor.rooms.show', $room) }}">
                         <x-card class="p-2">
-                            <div class="flex h-20 items-center justify-center rounded-lg" style="background: var(--grad-photo)">
-                                <x-heroicon-o-photo class="h-6 w-6 text-gold-500" />
-                            </div>
+                            <x-photo :url="$room->cover_url" :alt="'Kamar ' . $room->number"
+                                class="h-20 w-full rounded-lg" />
                             <p class="mt-2 text-xs font-semibold">Kamar {{ $room->number }}</p>
                             <p class="text-[11px] text-slate">Rp {{ number_format($room->price_yearly, 0, ',', '.') }}/thn</p>
                         </x-card>

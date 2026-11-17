@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class Room extends Model
 {
@@ -50,9 +51,44 @@ class Room extends Model
         return $this->hasMany(Complaint::class);
     }
 
+    /** Foto milik kamar ini. */
     public function galleries(): HasMany
     {
-        return $this->hasMany(Gallery::class);
+        return $this->hasMany(Gallery::class)->orderBy('id');
+    }
+
+    /** Foto gedung kamar ini (yang tidak terikat ke kamar tertentu), dipakai sebagai cadangan. */
+    public function buildingPhotos(): HasMany
+    {
+        return $this->hasMany(Gallery::class, 'building_id', 'building_id')
+            ->whereNull('room_id')
+            ->orderBy('id');
+    }
+
+    public function getPhotoListAttribute(): Collection
+    {
+        // 1) foto khusus kamar ini
+        $own = $this->galleries->whereNotNull('photo_path')->values();
+        if ($own->isNotEmpty()) {
+            return $own;
+        }
+
+        $building = $this->buildingPhotos->whereNotNull('photo_path');
+
+        // 2) foto kamar yang dipakai bersama oleh semua kamar di bangunan ini
+        $shared = $building->where('category', 'kamar')->values();
+        if ($shared->isNotEmpty()) {
+            return $shared;
+        }
+
+        // 3) foto gedung sebagai cadangan terakhir
+        return $building->values();
+    }
+
+    /** Foto sampul untuk kartu kamar; null kalau belum ada foto sama sekali. */
+    public function getCoverUrlAttribute(): ?string
+    {
+        return $this->photo_list->first()?->url;
     }
 
     public function facilities(): BelongsToMany

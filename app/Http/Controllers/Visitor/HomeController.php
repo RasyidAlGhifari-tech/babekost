@@ -29,12 +29,15 @@ class HomeController extends Controller
         // Kamar kosong hari ini, memakai scope di model Room.
         $available      = Room::availableBetween($today, $today);
         $availableCount = (clone $available)->count();
-        $quickRooms     = (clone $available)->orderBy('number')->limit(2)->get();
+        $quickRooms     = (clone $available)
+            ->with(['galleries', 'buildingPhotos'])
+            ->orderBy('number')->limit(2)->get();
 
         $facilities = Facility::orderBy('name')->limit(8)->pluck('name');
 
-        // Foto banner carousel (maksimal 5).
+        // Foto banner carousel: hanya foto bangunan utama (maksimal 5).
         $banners = Gallery::where('category', self::BANNER_CATEGORY)
+            ->where('building_id', $building?->id)
             ->whereNotNull('photo_path')
             ->orderBy('id')->limit(5)->get();
 

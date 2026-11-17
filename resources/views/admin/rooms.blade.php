@@ -45,9 +45,8 @@
                     $daysLeft = $active ? (int) today()->diffInDays($active->end_date, false) : null;
                 @endphp
                 <x-card class="flex items-center gap-3 overflow-visible p-3">
-                    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg" style="background: var(--grad-photo)">
-                        <x-heroicon-o-photo class="h-5 w-5 text-gold-500" />
-                    </div>
+                    <x-photo :url="$room->cover_url" :alt="'Kamar ' . $room->number" icon="h-5 w-5"
+                        class="h-14 w-14 shrink-0 rounded-lg" />
                     <div class="min-w-0 flex-1">
                         <p class="text-sm font-semibold">Kamar {{ $room->number }}</p>
                         <p class="text-[11px] text-slate">
@@ -100,5 +99,23 @@
                 <p class="py-10 text-center text-sm text-slate">Kamar tidak ditemukan.</p>
             @endforelse
         </div>
+
+        @if ($rooms->hasPages())
+            <div class="flex items-center justify-between pt-1 text-xs font-medium">
+                @if ($rooms->onFirstPage())
+                    <span class="rounded-full border border-line-chip bg-white px-4 py-2 text-muted">Sebelumnya</span>
+                @else
+                    <a href="{{ $rooms->previousPageUrl() }}" class="rounded-full border border-line-chip bg-white px-4 py-2 text-gold-700">Sebelumnya</a>
+                @endif
+
+                <span class="text-slate">Halaman {{ $rooms->currentPage() }} dari {{ $rooms->lastPage() }}</span>
+
+                @if ($rooms->hasMorePages())
+                    <a href="{{ $rooms->nextPageUrl() }}" class="rounded-full border border-line-chip bg-white px-4 py-2 text-gold-700">Berikutnya</a>
+                @else
+                    <span class="rounded-full border border-line-chip bg-white px-4 py-2 text-muted">Berikutnya</span>
+                @endif
+            </div>
+        @endif
     </div>
 </x-layouts.admin>

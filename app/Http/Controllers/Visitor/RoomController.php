@@ -23,7 +23,7 @@ class RoomController extends Controller
             'terisi' => $total - $availableIds->count(),
         ];
 
-        $rooms = Room::with('building')
+        $rooms = Room::with(['building', 'galleries', 'buildingPhotos'])
             ->when($search !== '', fn ($q) => $q->where('number', 'like', "%{$search}%"))
             ->when($filter === 'kosong', fn ($q) => $q->whereIn('id', $availableIds))
             ->when($filter === 'terisi', fn ($q) => $q->whereNotIn('id', $availableIds))
@@ -43,7 +43,7 @@ class RoomController extends Controller
     {
         $today = today();
 
-        $room->load(['building', 'facilities']);
+        $room->load(['building', 'facilities', 'galleries', 'buildingPhotos']);
 
         $isAvailable = Room::availableBetween($today, $today)
             ->whereKey($room->id)

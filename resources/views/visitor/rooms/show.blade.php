@@ -5,9 +5,36 @@
             <x-heroicon-o-arrow-left class="h-4 w-4" /> Kembali ke daftar
         </a>
 
-        <div class="flex h-52 items-center justify-center rounded-xl" style="background: var(--grad-photo)">
-            <x-heroicon-o-photo class="h-8 w-8 text-gold-500" />
-        </div>
+        {{-- Foto kamar (carousel) --}}
+        @php $photos = $room->photo_list; @endphp
+        @if ($photos->isNotEmpty())
+            <div x-data="{ i: 0 }">
+                <div x-ref="track"
+                    @scroll.passive="i = Math.round($refs.track.scrollLeft / $refs.track.clientWidth)"
+                    class="flex snap-x snap-mandatory overflow-x-auto rounded-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    @foreach ($photos as $photo)
+                        <div class="h-52 w-full shrink-0 snap-center bg-tint-gold">
+                            <img src="{{ $photo->url }}" alt="Kamar {{ $room->number }}" draggable="false"
+                                class="h-full w-full object-cover"
+                                loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                        </div>
+                    @endforeach
+                </div>
+
+                @if ($photos->count() > 1)
+                    <div class="mt-2 flex justify-center gap-1.5">
+                        @foreach ($photos as $photo)
+                            <button type="button" aria-label="Foto {{ $loop->iteration }}"
+                                @click="$refs.track.scrollTo({ left: $refs.track.clientWidth * {{ $loop->index }}, behavior: 'smooth' })"
+                                class="h-1.5 w-1.5 rounded-full"
+                                :class="i === {{ $loop->index }} ? 'bg-gold-700' : 'bg-handle'"></button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        @else
+            <x-photo :url="null" icon="h-8 w-8" class="h-52 rounded-xl" />
+        @endif
 
         <div class="flex items-center justify-between">
             <h2 class="text-base font-bold">Kamar {{ $room->number }}</h2>

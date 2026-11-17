@@ -31,9 +31,8 @@
                 @php $available = isset($availableIds[$room->id]); @endphp
                 <a href="{{ route('visitor.rooms.show', $room) }}" class="block">
                     <x-card class="flex items-center gap-3 p-3">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg" style="background: var(--grad-photo)">
-                            <x-heroicon-o-photo class="h-5 w-5 text-gold-500" />
-                        </div>
+                        <x-photo :url="$room->cover_url" :alt="'Kamar ' . $room->number" icon="h-5 w-5"
+                            class="h-14 w-14 shrink-0 rounded-lg" />
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-semibold">Kamar {{ $room->number }}</p>
                             <p class="text-[11px] text-slate">
