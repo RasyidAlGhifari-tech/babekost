@@ -1,18 +1,47 @@
-<x-layouts.visitor :title="config('babekost.name')" :logo="true">
+<x-layouts.visitor title="Babekost" :logo="true">
 
     <div class="space-y-5 p-4">
 
-        {{-- Foto utama --}}
-        <div>
-            <div class="flex h-52 items-center justify-center rounded-xl" style="background: var(--grad-photo)">
-                <x-heroicon-o-photo class="h-8 w-8 text-gold-500" />
+        {{-- Banner (carousel) --}}
+        @if ($banners->isNotEmpty())
+            <div x-data="{ i: 0 }">
+                <div x-ref="track"
+                    @scroll.passive="i = Math.round($refs.track.scrollLeft / $refs.track.clientWidth)"
+                    class="flex snap-x snap-mandatory overflow-x-auto rounded-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    @foreach ($banners as $banner)
+                        <div class="aspect-video w-full shrink-0 snap-center bg-tint-gold">
+                            <img src="{{ $banner->url }}"
+                                alt="{{ $banner->title ?? ($building?->name ?? 'Babekost') }}"
+                                class="h-full w-full object-cover"
+                                loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                        </div>
+                    @endforeach
+                </div>
+
+                @if ($banners->count() > 1)
+                    <div class="mt-2 flex justify-center gap-1.5">
+                        @foreach ($banners as $banner)
+                            <button type="button" aria-label="Foto {{ $loop->iteration }}"
+                                @click="$refs.track.scrollTo({ left: $refs.track.clientWidth * {{ $loop->index }}, behavior: 'smooth' })"
+                                class="h-1.5 w-1.5 rounded-full"
+                                :class="i === {{ $loop->index }} ? 'bg-gold-700' : 'bg-handle'"></button>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-            <div class="mt-2 flex justify-center gap-1.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-gold-700"></span>
-                <span class="h-1.5 w-1.5 rounded-full bg-handle"></span>
-                <span class="h-1.5 w-1.5 rounded-full bg-handle"></span>
+        @else
+            {{-- Belum ada foto: tampilkan placeholder --}}
+            <div>
+                <div class="flex h-52 items-center justify-center rounded-xl" style="background: var(--grad-photo)">
+                    <x-heroicon-o-photo class="h-8 w-8 text-gold-500" />
+                </div>
+                <div class="mt-2 flex justify-center gap-1.5">
+                    <span class="h-1.5 w-1.5 rounded-full bg-gold-700"></span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-handle"></span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-handle"></span>
+                </div>
             </div>
-        </div>
+        @endif
 
         {{-- Nama dan alamat --}}
         <div>
